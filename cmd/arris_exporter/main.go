@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/christianclinton/arris_exporter"
 	"github.com/mdlayher/arris"
-	"github.com/mdlayher/arris_exporter"
 )
 
 func main() {

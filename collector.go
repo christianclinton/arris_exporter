@@ -12,6 +12,7 @@ type collector struct {
 	UptimeSecondsTotal *prometheus.Desc
 
 	DownstreamPowerDBMV                 *prometheus.Desc
+	DownstreamSNR                       *prometheus.Desc
 	DownstreamBytesTotal                *prometheus.Desc
 	DownstreamCorrectedSymbolsTotal     *prometheus.Desc
 	DownstreamUncorrectableSymbolsTotal *prometheus.Desc
@@ -39,6 +40,13 @@ func newCollector(c *arris.Client) prometheus.Collector {
 		DownstreamPowerDBMV: prometheus.NewDesc(
 			"arris_downstream_power_dbmv",
 			"Current power level for the downstream connection in dBmV.",
+			[]string{"name"},
+			nil,
+		),
+
+		DownstreamSNR: prometheus.NewDesc(
+			"arris_downstream_snr",
+			"Signal to noise ratio for the downstream connection in dB.",
 			[]string{"name"},
 			nil,
 		),
@@ -108,6 +116,7 @@ func (c *collector) Describe(ch chan<- *prometheus.Desc) {
 	ds := []*prometheus.Desc{
 		c.UptimeSecondsTotal,
 		c.DownstreamPowerDBMV,
+		c.DownstreamSNR,
 		c.DownstreamBytesTotal,
 		c.DownstreamCorrectedSymbolsTotal,
 		c.DownstreamUncorrectableSymbolsTotal,
@@ -150,6 +159,7 @@ func (c *collector) collectDownstream(ch chan<- prometheus.Metric, downstream []
 			v float64
 		}{
 			{d: c.DownstreamPowerDBMV, t: prometheus.GaugeValue, v: ds.Power},
+			{d: c.DownstreamSNR, t: prometheus.GaugeValue, v: ds.SNR},
 			{d: c.DownstreamBytesTotal, v: float64(ds.Octets)},
 			{d: c.DownstreamCorrectedSymbolsTotal, v: float64(ds.Corrected)},
 			{d: c.DownstreamUncorrectableSymbolsTotal, v: float64(ds.Uncorrectable)},
